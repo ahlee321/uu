@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给你的一封信</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-1:#12161f;
+    --ink-2:#1c2430;
+    --ink-3:#2a2f3a;
+    --dusk-1:#3d3a42;
+    --dusk-2:#6b5a54;
+    --rose:#a8837a;
+    --sand:#d9b48f;
+    --dawn:#f2e4d3;
+    --honey:#d4a574;
+    --light-text:#ece9e3;
+    --dark-text:#3a2e28;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    background:var(--ink-1);
+    color:var(--light-text);
+    line-height:2;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .story{
+    background:linear-gradient(
+      to bottom,
+      var(--ink-1)   0%,
+      var(--ink-2)   10%,
+      var(--ink-3)   22%,
+      var(--dusk-1)  34%,
+      var(--dusk-2)  48%,
+      var(--rose)    62%,
+      var(--sand)    80%,
+      var(--dawn)    100%
+    );
+  }
+  .thread{
+    position:fixed; left:50%; top:0; width:1px; height:100vh;
+    background:linear-gradient(to bottom, transparent, rgba(212,165,116,.22), transparent);
+    transform:translateX(-50%); pointer-events:none; z-index:0;
+  }
+  section{
+    position:relative; z-index:1; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:14vh 7vw;
+  }
+  .col{ max-width:34rem; width:100%; }
+  .ch{
+    font-size:.78rem; font-weight:300; letter-spacing:.5em;
+    opacity:.45; margin-bottom:2.4rem; padding-left:.5em;
+  }
+  .reveal{
+    opacity:0; transform:translateY(18px);
+    transition:opacity 1.4s ease, transform 1.4s ease;
+  }
+  .reveal.seen{ opacity:1; transform:none; }
+  .reveal.d1{ transition-delay:.15s; }
+  .reveal.d2{ transition-delay:.35s; }
+  .reveal.d3{ transition-delay:.55s; }
+  .reveal.d4{ transition-delay:.75s; }
+  .hero{ text-align:center; }
+  .hero .season{
+    font-size:clamp(2.6rem, 9vw, 4.6rem); font-weight:500;
+    letter-spacing:.12em; line-height:1.4;
+  }
+  .hero .sub{
+    margin-top:2.4rem; font-size:clamp(1rem, 3.6vw, 1.25rem);
+    font-weight:300; color:rgba(236,233,227,.72);
+    letter-spacing:.06em; line-height:2.1;
+  }
+  .scroll-hint{
+    position:absolute; bottom:5vh; left:50%; transform:translateX(-50%);
+    font-size:.8rem; letter-spacing:.4em; color:rgba(236,233,227,.4);
+    animation:breathe 3.4s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.35; transform:translate(-50%,0); }
+    50%{ opacity:.7; transform:translate(-50%,6px); }
+  }
+  .line{
+    text-align:center; font-size:clamp(1.45rem, 5.2vw, 2.2rem);
+    font-weight:500; line-height:1.7; letter-spacing:.03em;
+  }
+  .line .soft{
+    display:block; margin-top:1.8rem; font-size:clamp(1rem, 3.6vw, 1.18rem);
+    font-weight:300; opacity:.75; letter-spacing:.04em; line-height:2;
+  }
+  .body p{
+    font-size:clamp(1.04rem, 3.9vw, 1.18rem); font-weight:300;
+    letter-spacing:.03em; margin-bottom:1.5rem;
+  }
+  .body p.em{ font-weight:500; opacity:1; }
+  .body p:last-child{ margin-bottom:0; }
+  .lead{
+    font-size:clamp(1.15rem, 4.4vw, 1.48rem); font-weight:500;
+    margin-bottom:2rem; letter-spacing:.04em; line-height:1.7;
+  }
+  .warm-mid{ color:#f7f0e7; }
+  .warm-mid .ch{ color:#f7f0e7; }
+  .warm-late{ color:var(--dark-text); }
+  .warm-late .ch{ color:var(--dark-text); opacity:.5; }
+  .warm-late .body p{ color:#463830; }
+  .warm-late .lead{ color:#3a2e28; }
+  .closing{ text-align:center; }
+  .closing .final{
+    font-size:clamp(1.55rem, 5.4vw, 2.3rem); font-weight:500;
+    line-height:1.75; color:var(--dark-text); letter-spacing:.03em;
+  }
+  .closing .note{
+    margin-top:2.6rem; font-size:clamp(1rem, 3.7vw, 1.14rem);
+    font-weight:300; color:#5a483d; line-height:2.1; letter-spacing:.03em;
+  }
+  .mark{ margin:4rem auto 0; width:2.4rem; height:1px; background:rgba(58,46,40,.4); }
+  @media (prefers-reduced-motion:reduce){
+    .reveal{ opacity:1; transform:none; transition:none; }
+    .scroll-hint{ animation:none; }
+    html{ scroll-behavior:auto; }
+  }
+  @media (max-width:520px){
+    section{ padding:12vh 8vw; }
+    body{ line-height:1.9; }
+    .ch{ letter-spacing:.4em; }
+  }
+</style>
+</head>
+<body>
+<div class="thread" aria-hidden="true"></div>
+<main class="story">
+
+  <section class="hero">
+    <div class="col">
+      <h1 class="season reveal">半年过去了</h1>
+      <p class="sub reveal d2">希望这封信，不会给你带来太大的困扰。<br>我还是，会想起你。</p>
+    </div>
+    <div class="scroll-hint reveal d4">往下</div>
+  </section>
+
+  <section>
+    <div class="col line reveal">
+      我想问你一句话——<br>我们，可以重新来过吗？
+      <span class="soft reveal d2">
+        与其说是重新追你，不如说，是再给彼此一个机会。<br>
+        不急着回答，我们可以先从朋友做起。<br><br>
+        我知道，重新开始比一开始更难，也可能会直接被你拒绝。可我没办法违背心里的想法——从我第一次认真想追你的那一刻起，我就认定了是你。
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <div class="col body">
+      <p class="ch reveal">那天晚上</p>
+      <p class="lead reveal">你问过我，那天晚上，为什么这个也不说、那个也不说。</p>
+      <p class="em reveal d1">其实我不是没有话可说。</p>
+      <p class="reveal d2">只是那一刻，我更想确定的是——我们是不是都真的想在一起。</p>
+      <p class="reveal d3">我不希望你，是因为一时的感动才留下来。我希望的，是你也有一颗想一起走下去的心。</p>
+    </div>
+  </section>
+
+  <section class="warm-mid">
+    <div class="col body">
+      <p class="ch reveal">当初</p>
+      <p class="reveal">也许分开这段时间，你会想：何必为一段感情，去打乱本来平静的生活呢？这个我懂，没有人想要那样过。</p>
+      <p class="reveal d1">可如果是这样，就更值得想想——我们当初，是怎么走到一起的。</p>
+      <p class="em reveal d2">能从什么都没有，一起走进社会，一路还留在彼此身边，这样的人，真的不容易遇到。</p>
+      <p class="reveal d3">你在信里写过，你喜欢的，是那个做自己的我——真诚、善良、简单。我想要的，其实也只是这样：心里装着彼此，守着最初的样子，一直走下去。</p>
+    </div>
+  </section>
+
+  <section class="warm-mid">
+    <div class="col body">
+      <p class="ch reveal">你</p>
+      <p class="lead reveal">我一直喜欢你，不是因为我需要有个人一直陪着。</p>
+      <p class="reveal d1">是和你在一起之后，我的生活好像变得更有意义了。是你出门时会想起我，偶尔给我带点东西；是你包容我的邋遢、不爱打扮，还总想帮我挑衣服——虽然我一直不敢尝试，但其实我很喜欢。</p>
+      <p class="em reveal d2">还有你的勇敢。</p>
+      <p class="reveal d3">只要是你想做的事，你从不因为怕做不到就退缩，想了，就一定会把它做好。连你能在公司认识那么多人，我都很羡慕——小小的个子，胆量却这么大。这些，都是我一直很喜欢你的地方。</p>
+    </div>
+  </section>
+
+  <section class="warm-mid">
+    <div class="col body">
+      <p class="ch reveal">诚实地说</p>
+      <p class="lead reveal">我也想诚实地告诉你——我确实没有完全懂你。</p>
+      <p class="reveal d1">你很多时候的情绪，我读不懂；有些在我看来没那么糟的事，却是你心里过不去的坎。我知道，你常常把话憋在心里，也不太知道怎么说出口、怎么去解决。</p>
+      <p class="reveal d2">那时候你跟我说，你对我没了感情，也不确定还想不想继续、不确定喜不喜欢我——说实话，那句话让我很受伤。从那以后，我甚至觉得自己不认识你了，很慌，也很迷茫，因为前几个月，你明明还那么坚定。</p>
+      <p class="em reveal d3">后来我才慢慢明白：很多时候，你什么都没说，我就以为你没事了。</p>
+    </div>
+  </section>
+
+  <section class="warm-late">
+    <div class="col body">
+      <p class="ch reveal">我也有做得不好的地方</p>
+      <p class="reveal">我也知道，问题不只在你。</p>
+      <p class="reveal d1">我太想让你陪着我了——去打球、去买东西、去任何地方，我都想要你在。现在回头看，我确实太依赖你了。</p>
+      <p class="reveal d2">我心里一直很希望被在乎、被理解，把情绪一股脑地表现出来，其实也给你压了不少担子。</p>
+      <p class="em reveal d3">我说这些，不是要把谁说得多差，也不是想打击你，只是希望我们都能，好好做一些调整。</p>
+    </div>
+  </section>
+
+  <section class="warm-late closing">
+    <div class="col">
+      <p class="final reveal">我不敢保证马上就能变好，<br>但我会慢慢去学。</p>
+      <p class="note reveal d1">
+        你可以说我。哪怕我一时不高兴、你也会觉得累——我知道，那是因为你在认真对待我们。<br><br>
+        情绪是会互相影响的。如果我们都还有心，想让这段关系走得更远、更开心，那道坎，一定能一起跨过去。<br><br>
+        这封信，不是要你现在就给我一个答案。过了这么久，要你重新再想一次，本来就不容易。无论你怎么决定，我都会尊重。<br><br>
+        我只是想让你知道——<br>你需要我的时候，我一直都在。
+      </p>
+      <div class="mark reveal d3" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); }
+    });
+  }, { threshold:0.2 });
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
