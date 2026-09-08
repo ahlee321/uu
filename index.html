@@ -121,6 +121,65 @@
     font-weight:300; color:#5a483d; line-height:2.1; letter-spacing:.03em;
   }
   .mark{ margin:4rem auto 0; width:2.4rem; height:1px; background:rgba(58,46,40,.4); }
+
+  /* ---- choice section ---- */
+  .choose{ text-align:center; }
+  .choose .prompt{
+    font-size:clamp(1.3rem, 4.8vw, 1.85rem); font-weight:500;
+    color:var(--dark-text); line-height:1.7; letter-spacing:.04em;
+    margin-bottom:.8rem;
+  }
+  .choose .prompt-sub{
+    font-size:clamp(.95rem, 3.4vw, 1.08rem); font-weight:300;
+    color:#6b584c; margin-bottom:2.8rem; letter-spacing:.03em;
+  }
+  .btns{
+    display:flex; flex-direction:column; gap:1rem;
+    max-width:20rem; margin:0 auto;
+  }
+  .btn{
+    font-family:inherit; font-size:clamp(1.02rem, 3.8vw, 1.15rem);
+    font-weight:400; letter-spacing:.06em; color:var(--dark-text);
+    background:rgba(255,255,255,.35); border:1px solid rgba(58,46,40,.28);
+    border-radius:2px; padding:1rem 1.4rem; cursor:pointer;
+    transition:background .5s ease, border-color .5s ease, transform .4s ease;
+  }
+  .btn:hover{ background:rgba(255,255,255,.6); border-color:rgba(58,46,40,.5); }
+  .btn:active{ transform:scale(.98); }
+  .btn:focus-visible{ outline:2px solid var(--dark-text); outline-offset:3px; }
+  .btn.yes{ border-color:rgba(150,105,70,.55); }
+
+  .note-box{
+    margin:2rem auto 0; max-width:20rem;
+  }
+  .note-box textarea{
+    width:100%; min-height:5rem; resize:vertical;
+    font-family:inherit; font-size:1rem; font-weight:300; color:var(--dark-text);
+    line-height:1.9; letter-spacing:.02em;
+    background:rgba(255,255,255,.3); border:1px solid rgba(58,46,40,.24);
+    border-radius:2px; padding:.9rem 1rem;
+  }
+  .note-box textarea::placeholder{ color:#8a7767; }
+  .note-box textarea:focus{ outline:none; border-color:rgba(58,46,40,.5); background:rgba(255,255,255,.5); }
+  .note-label{
+    font-size:.9rem; font-weight:300; color:#7a6659;
+    margin-bottom:.7rem; letter-spacing:.03em; text-align:left; padding-left:.2rem;
+  }
+
+  /* reply after submit */
+  .reply{
+    display:none; text-align:center;
+  }
+  .reply.show{ display:block; animation:fadein 1.2s ease both; }
+  .reply .r-line{
+    font-size:clamp(1.35rem, 4.8vw, 1.9rem); font-weight:500;
+    color:var(--dark-text); line-height:1.7; letter-spacing:.04em;
+  }
+  .reply .r-sub{
+    margin-top:1.6rem; font-size:clamp(.98rem, 3.5vw, 1.1rem); font-weight:300;
+    color:#5a483d; line-height:2; letter-spacing:.03em;
+  }
+  @keyframes fadein{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
   @media (prefers-reduced-motion:reduce){
     .reveal{ opacity:1; transform:none; transition:none; }
     .scroll-hint{ animation:none; }
@@ -219,6 +278,29 @@
     </div>
   </section>
 
+  <section class="warm-late choose">
+    <div class="col">
+      <div id="chooseArea">
+        <p class="prompt reveal">读到这里，你的心里，是什么样的？</p>
+        <p class="prompt-sub reveal d1">怎么选都好，我都在。</p>
+        <div class="btns reveal d2">
+          <button class="btn yes" data-choice="我愿意试试">我愿意试试</button>
+          <button class="btn" data-choice="让我再想想">让我再想想</button>
+          <button class="btn" data-choice="我想先聊聊">我想先聊聊</button>
+        </div>
+        <div class="note-box reveal d3">
+          <div class="note-label">想说的话，可以写在这里（不写也没关系）</div>
+          <textarea id="noteText" placeholder="……"></textarea>
+        </div>
+      </div>
+
+      <div class="reply" id="replyArea">
+        <p class="r-line" id="replyLine">谢谢你，愿意读到这里。</p>
+        <p class="r-sub">我收到了。<br>无论如何，我都在。</p>
+      </div>
+    </div>
+  </section>
+
 </main>
 <script>
   const io = new IntersectionObserver((entries)=>{
@@ -227,6 +309,47 @@
     });
   }, { threshold:0.2 });
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ====== 把下面这一行的地址换成你自己的 Formspree 地址 ======
+  const FORMSPREE_URL = "https://formspree.io/f/xxxxxxx";
+  // ==========================================================
+
+  const chooseArea = document.getElementById('chooseArea');
+  const replyArea  = document.getElementById('replyArea');
+  const replyLine  = document.getElementById('replyLine');
+  const noteText   = document.getElementById('noteText');
+  let submitted = false;
+
+  const replyMap = {
+    "我愿意试试": "谢谢你，愿意再给我们一次机会。",
+    "让我再想想": "好，你慢慢想，不着急。",
+    "我想先聊聊": "好，那我们找个时间，好好聊聊。"
+  };
+
+  document.querySelectorAll('.btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(submitted) return;
+      submitted = true;
+      const choice = btn.getAttribute('data-choice');
+      document.querySelectorAll('.btn').forEach(b=>b.disabled=true);
+
+      try{
+        await fetch(FORMSPREE_URL, {
+          method:"POST",
+          headers:{ "Accept":"application/json", "Content-Type":"application/json" },
+          body: JSON.stringify({
+            "她的选择": choice,
+            "她想说的话": noteText.value.trim() || "（没有留言）"
+          })
+        });
+      }catch(e){ /* 即使网络出错，也照常给她一个温柔的回应 */ }
+
+      replyLine.textContent = replyMap[choice] || "谢谢你，愿意读到这里。";
+      chooseArea.style.display = "none";
+      replyArea.classList.add('show');
+      replyArea.scrollIntoView({ behavior:"smooth", block:"center" });
+    });
+  });
 </script>
 </body>
 </html>
